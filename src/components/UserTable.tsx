@@ -6,9 +6,10 @@ interface UserTableProps {
   readonly users: User[];
   readonly onEdit: (user: User) => void;
   readonly onDelete: (id: number) => void;
+  readonly operationLoading?: string | null;
 }
 
-export default function UserTable({ users, onEdit, onDelete }: UserTableProps) {
+export default function UserTable({ users, onEdit, onDelete, operationLoading }: UserTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border-collapse">
@@ -34,18 +35,26 @@ export default function UserTable({ users, onEdit, onDelete }: UserTableProps) {
               <td className="px-4 py-3 text-sm text-gray-900 border-b">{user.phone || ''}</td>
               <td className="px-4 py-3 text-sm text-gray-900 border-b">{user.location || ''}</td>
               <td className="px-4 py-3 text-sm text-gray-900 border-b">{user.hobby || ''}</td>
-              <td className="px-4 py-3 text-sm border-b">
+              <td className="px-4 py-3 text-sm text-gray-900 border-b">
                 <div className="flex space-x-2">
                   <button
                     onClick={() => onEdit(user)}
-                    className="px-3 py-1 text-xs font-medium text-white bg-yellow-500 rounded hover:bg-yellow-600 transition-colors"
+                    disabled={operationLoading !== null}
+                    className="px-3 py-1 text-xs font-medium text-white bg-yellow-500 rounded hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                   >
+                    {operationLoading === 'editing' && (
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
+                    )}
                     Edit
                   </button>
                   <button
                     onClick={() => onDelete(user.id)}
-                    className="px-3 py-1 text-xs font-medium text-white bg-red-500 rounded hover:bg-red-600 transition-colors"
+                    disabled={operationLoading !== null}
+                    className="px-3 py-1 text-xs font-medium text-white bg-red-500 rounded hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                   >
+                    {operationLoading === 'deleting' && (
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
+                    )}
                     Del
                   </button>
                 </div>

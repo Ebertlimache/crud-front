@@ -13,6 +13,7 @@ export default function Home() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isAddMode, setIsAddMode] = useState(false);
+  const [operationLoading, setOperationLoading] = useState<string | null>(null);
 
   // Load users on component mount
   useEffect(() => {
@@ -22,6 +23,9 @@ export default function Home() {
   // Load users when search term changes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      if (searchTerm) {
+        setOperationLoading('searching');
+      }
       loadUsers(searchTerm);
     }, 300);
 
@@ -38,6 +42,7 @@ export default function Home() {
       alert('Error loading users. Please check if the backend is running.');
     } finally {
       setLoading(false);
+      setOperationLoading(null);
     }
   };
 
@@ -61,6 +66,8 @@ export default function Home() {
 
   const handleSave = async (userData: CreateUserData) => {
     try {
+      setOperationLoading(isAddMode ? 'adding' : 'editing');
+      
       if (isAddMode) {
         await UserService.createUser(userData);
       } else if (editingUser) {
@@ -79,6 +86,7 @@ export default function Home() {
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
+        setOperationLoading('deleting');
         await UserService.deleteUser(id);
         await loadUsers(searchTerm);
       } catch (error) {
@@ -90,10 +98,13 @@ export default function Home() {
 
   const handleExportCSV = async () => {
     try {
+      setOperationLoading('exporting');
       await UserService.exportToCSV();
     } catch (error) {
       console.error('Error exporting CSV:', error);
       alert('Error exporting CSV. Please try again.');
+    } finally {
+      setOperationLoading(null);
     }
   };
 
@@ -105,13 +116,20 @@ export default function Home() {
 
         {/* Search Bar */}
         <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white placeholder-gray-500"
+            />
+            {operationLoading === 'searching' && (
+              <div className="absolute right-3 top-2.5">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Loading State */}
@@ -127,16 +145,21 @@ export default function Home() {
             <UserTable 
               users={users} 
               onEdit={handleEdit} 
-              onDelete={handleDelete} 
+              onDelete={handleDelete}
+              operationLoading={operationLoading}
             />
 
             {/* Action Buttons */}
             <div className="mt-6 flex space-x-4">
               <button
                 onClick={handleExportCSV}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                disabled={operationLoading === 'exporting'}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
               >
-                Download CSV
+                {operationLoading === 'exporting' && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                )}
+                {operationLoading === 'exporting' ? 'Exporting...' : 'Download CSV'}
               </button>
               <button
                 onClick={handleAdd}
@@ -156,6 +179,20 @@ export default function Home() {
           onSave={handleSave}
           title={isAddMode ? 'Add New User' : 'Edit User'}
         />
+
+        {/* Global Loading Overlay */}
+        {(operationLoading === 'adding' || operationLoading === 'editing' || operationLoading === 'deleting') && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 flex items-center space-x-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+              <span className="text-gray-700">
+                {operationLoading === 'adding' && 'Adding user...'}
+                {operationLoading === 'editing' && 'Updating user...'}
+                {operationLoading === 'deleting' && 'Deleting user...'}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

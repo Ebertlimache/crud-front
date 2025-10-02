@@ -71,7 +71,7 @@ export default function UserForm({ user, isOpen, onClose, onSave, title }: UserF
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">{title}</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">{title}</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -83,7 +83,7 @@ export default function UserForm({ user, isOpen, onClose, onSave, title }: UserF
               value={formData.first}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -96,7 +96,7 @@ export default function UserForm({ user, isOpen, onClose, onSave, title }: UserF
               value={formData.last}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -109,7 +109,7 @@ export default function UserForm({ user, isOpen, onClose, onSave, title }: UserF
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -121,7 +121,7 @@ export default function UserForm({ user, isOpen, onClose, onSave, title }: UserF
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -133,7 +133,7 @@ export default function UserForm({ user, isOpen, onClose, onSave, title }: UserF
               name="location"
               value={formData.location}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -145,7 +145,7 @@ export default function UserForm({ user, isOpen, onClose, onSave, title }: UserF
               name="hobby"
               value={formData.hobby}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 

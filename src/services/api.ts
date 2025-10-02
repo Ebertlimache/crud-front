@@ -65,10 +65,23 @@ export class UserService {
     
     const users = await response.json();
     
-    // Create CSV content
+    // Helper function to escape CSV fields
+    const escapeCsvField = (field: string | number): string => {
+      const str = String(field);
+      // If field contains delimiter, newline, or quote, wrap in quotes and escape internal quotes
+      if (str.includes(';') || str.includes(',') || str.includes('\n') || str.includes('\r') || str.includes('"')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+    
+    // Use semicolon as delimiter for better Excel compatibility (especially in Spanish locale)
+    const delimiter = ';';
+    
+    // Create CSV content with proper escaping
     const headers = ['ID', 'First', 'Last', 'Email', 'Phone', 'Location', 'Hobby'];
     const csvContent = [
-      headers.join(','),
+      headers.map(escapeCsvField).join(delimiter),
       ...users.map((user: User) => [
         user.id,
         user.first,
@@ -77,11 +90,15 @@ export class UserService {
         user.phone || '',
         user.location || '',
         user.hobby || ''
-      ].join(','))
+      ].map(escapeCsvField).join(delimiter))
     ].join('\n');
 
-    // Create and download file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    // Add UTF-8 BOM to ensure proper encoding recognition
+    const BOM = '\uFEFF';
+    const csvWithBOM = BOM + csvContent;
+
+    // Create and download file with proper MIME type
+    const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
